@@ -1,0 +1,9 @@
+﻿# Local overrides and generated files
+.idea/
+.vscode/
+*.iml
+target/
+.env
+.env.*
+!.env.example
+application-local.yml
