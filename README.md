@@ -15,6 +15,7 @@
 - SKU creation, inventory query, and replenishment APIs
 - Transactional order creation with conditional inventory reservation and order price snapshots
 - Idempotent order cancellation with transactional reserved-stock release
+- Vue 3 admin UI for inventory and order API integration
 
 ## Inventory rules
 
@@ -69,6 +70,18 @@ After configuring a local MySQL database and successful startup:
 - Example API: `http://localhost:8081/api/system/ping`
 - Swagger UI: `http://localhost:8081/swagger-ui.html`
 
+
+## Frontend admin UI
+
+The Vue 3 admin UI is in `frontend/`. It supports SKU creation, inventory query/replenishment, order creation/cancellation, and in-browser API request logs.
+
+```powershell
+cd D:\project-zz\fulfillflow\frontend
+npm.cmd install
+npm.cmd run dev
+```
+
+Open `http://127.0.0.1:5173`. Vite proxies `/api` and `/actuator` to the backend on port `8081`. See `frontend/README.md` for the manual integration sequence.
 ## Database migration rule
 
 Never alter an already executed migration. Add a new migration for every schema or data correction, for example `V4__add_order_expire_at.sql`.
