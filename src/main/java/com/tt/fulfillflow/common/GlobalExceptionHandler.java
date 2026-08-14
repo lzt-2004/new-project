@@ -23,4 +23,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.failure(40401, exception.getMessage()));
     }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInsufficientStock(InsufficientStockException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.failure(40901, exception.getMessage()));
+    }
 }

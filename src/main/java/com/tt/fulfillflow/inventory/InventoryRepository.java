@@ -22,4 +22,20 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             @Param("quantity") int quantity,
             @Param("updatedAt") LocalDateTime updatedAt
     );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            update Inventory inventory
+            set inventory.availableStock = inventory.availableStock - :quantity,
+                inventory.reservedStock = inventory.reservedStock + :quantity,
+                inventory.version = inventory.version + 1,
+                inventory.updatedAt = :updatedAt
+            where inventory.skuId = :skuId
+              and inventory.availableStock >= :quantity
+            """)
+    int reserveAvailableStock(
+            @Param("skuId") Long skuId,
+            @Param("quantity") int quantity,
+            @Param("updatedAt") LocalDateTime updatedAt
+    );
 }

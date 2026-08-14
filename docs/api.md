@@ -1,12 +1,20 @@
-# API notes
+# FulfillFlow API
 
-## GET /api/system/ping
+## Response envelope
 
-A smoke-test endpoint used by the initial MockMvc test.
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {}
+}
+```
 
-## POST /api/skus
+Validation errors use HTTP `400` and code `40001`. Missing resources use HTTP `404` and code `40401`. Insufficient inventory uses HTTP `409` and code `40901`.
 
-Creates a SKU and an inventory record.
+## Create SKU
+
+`POST /api/skus`
 
 ```json
 {
@@ -17,16 +25,35 @@ Creates a SKU and an inventory record.
 }
 ```
 
-## GET /api/skus/{skuId}/inventory
+Returns HTTP `201` with SKU and inventory data.
 
-Returns SKU information with available and reserved inventory.
+## Query inventory
 
-## POST /api/skus/{skuId}/inventory/replenishments
+`GET /api/skus/{skuId}/inventory`
 
-Increases available inventory only. `quantity` must be greater than zero.
+Returns the current `availableStock` and `reservedStock`.
+
+## Replenish inventory
+
+`POST /api/skus/{skuId}/inventory/replenishments`
 
 ```json
 {
   "quantity": 10
 }
 ```
+
+Quantity must be positive. Replenishment changes only `availableStock`.
+
+## Create order
+
+`POST /api/orders`
+
+```json
+{
+  "skuId": 1,
+  "quantity": 3
+}
+```
+
+Returns HTTP `201` with an order number, price snapshot, total amount, and initial `PENDING` status. It atomically moves the requested quantity from `availableStock` to `reservedStock`. When available stock is insufficient, it returns HTTP `409` and code `40901`.
