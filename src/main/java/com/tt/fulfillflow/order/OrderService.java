@@ -50,4 +50,27 @@ public class OrderService {
         );
         return OrderResponse.from(salesOrderRepository.saveAndFlush(order));
     }
+
+    @Transactional
+    public OrderResponse cancelOrder(Long orderId) {
+        SalesOrder order = salesOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("order not found: " + orderId));
+
+        LocalDateTime now = LocalDateTime.now();
+        int cancelledRows = salesOrderRepository.cancelIfPending(
+                orderId,
+                OrderStatus.PENDING,
+                OrderStatus.CANCELLED,
+                now
+        );
+        if (cancelledRows == 0) {
+            return OrderResponse.from(salesOrderRepository.findById(orderId).orElseThrow());
+        }
+
+        int releasedRows = inventoryRepository.releaseReservedStock(order.getSkuId(), order.getQuantity(), now);
+        if (releasedRows == 0) {
+            throw new IllegalStateException("reserved stock is inconsistent for order " + orderId);
+        }
+        return OrderResponse.from(salesOrderRepository.findById(orderId).orElseThrow());
+    }
 }

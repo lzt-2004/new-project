@@ -3,6 +3,7 @@ package com.tt.fulfillflow.order;
 import com.tt.fulfillflow.common.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,5 +24,10 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         return ApiResponse.success(orderService.createOrder(request));
+    }
+
+    @PostMapping("/{orderId}/cancellations")
+    public ApiResponse<OrderResponse> cancelOrder(@PathVariable Long orderId) {
+        return ApiResponse.success(orderService.cancelOrder(orderId));
     }
 }

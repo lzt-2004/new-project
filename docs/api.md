@@ -57,3 +57,9 @@ Quantity must be positive. Replenishment changes only `availableStock`.
 ```
 
 Returns HTTP `201` with an order number, price snapshot, total amount, and initial `PENDING` status. It atomically moves the requested quantity from `availableStock` to `reservedStock`. When available stock is insufficient, it returns HTTP `409` and code `40901`.
+
+## Cancel order
+
+`POST /api/orders/{orderId}/cancellations`
+
+No request body is required. A `PENDING` order changes to `CANCELLED` and atomically releases its quantity from `reservedStock` back to `availableStock`. Repeating the request returns the existing `CANCELLED` order and does not release inventory again.

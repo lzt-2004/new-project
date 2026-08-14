@@ -2,7 +2,7 @@
 
 > Inventory order fulfillment service. This repository is a one-week engineering MVP for learning delivery logic: versioned schema migration, tests, CI, containerized local runtime, and business design around inventory reservation and order status.
 
-## Current scope (Issue #3)
+## Current scope (Issue #4)
 
 - Java 17 + Spring Boot 3 + Maven
 - MySQL configuration externalized through environment variables
@@ -14,6 +14,7 @@
 - SKU and inventory schema managed by Flyway V2
 - SKU creation, inventory query, and replenishment APIs
 - Transactional order creation with conditional inventory reservation and order price snapshots
+- Idempotent order cancellation with transactional reserved-stock release
 
 ## Inventory rules
 
@@ -27,7 +28,7 @@
 - Java 17
 - Maven 3.9+ (or a Maven container)
 - MySQL 8 running locally, with an empty `fulfillflow` database and an application account
-- Redis is optional for Issue #2 because no Redis operation is executed yet
+- Redis is optional for Issue #4 because no Redis operation is executed yet
 
 ## Environment variables
 
@@ -54,6 +55,7 @@ The test profile uses an H2 in-memory database and runs Flyway V1, V2, and V3 mi
 - Creating an order reserves stock and records a price snapshot.
 - Insufficient stock returns HTTP 409 without changing inventory.
 - An order persistence failure rolls back its inventory reservation.
+- Cancelling a pending order releases reserved stock exactly once.
 
 ## Run the application
 
@@ -73,6 +75,6 @@ Never alter an already executed migration. Add a new migration for every schema 
 
 ## Next planned issues
 
-1. Add cancellation and release of reserved inventory.
-2. Add Docker Compose and a local deployment guide.
-3. Add a minimal management UI for API integration.
+1. Add Docker Compose and a local deployment guide.
+2. Add a minimal management UI for API integration.
+3. Add expiry cancellation and order query APIs.
