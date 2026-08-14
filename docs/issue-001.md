@@ -1,4 +1,4 @@
-﻿# Issue #1: Initialize backend and quality baseline
+# Issue #1: Initialize backend and quality baseline
 
 ## Goal
 Create a runnable Spring Boot backend skeleton for FulfillFlow and establish the migration, test, and CI baseline before implementing inventory or order behavior.

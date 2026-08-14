@@ -1,4 +1,4 @@
-﻿# Deployment notes (MVP)
+# Deployment notes (MVP)
 
 Issue #1 is intentionally not containerized yet. Docker Compose is scheduled after the order flow and test baseline are stable.
 

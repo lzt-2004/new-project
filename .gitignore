@@ -1,4 +1,4 @@
-﻿# Local overrides and generated files
+# Local overrides and generated files
 .idea/
 .vscode/
 *.iml

@@ -1,4 +1,4 @@
-﻿---
+---
 name: Feature
 about: Track a small, verifiable change
 labels: [feature]
