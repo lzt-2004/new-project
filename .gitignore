@@ -1,15 +1,20 @@
-# Local overrides and generated files
+# IDE and Java build output
 .idea/
 .vscode/
 *.iml
 target/
+fulfillflow-backend/target/
+
+# Frontend dependencies and build output
+fulfillflow-web/node_modules/
+fulfillflow-web/dist/
+fulfillflow-web/.npm-cache/
+fulfillflow-web/vite.log
+
+# Local secrets and runtime configuration
 .env
 .env.*
 !.env.example
-application-local.yml
-
-# Frontend dependencies and build output
-frontend/node_modules/
-frontend/dist/
-frontend/.npm-cache/
-frontend/vite.log
+fulfillflow-backend/src/main/resources/application.yml
+fulfillflow-backend/src/main/resources/application-local.yml
+fulfillflow-backend/start.log
