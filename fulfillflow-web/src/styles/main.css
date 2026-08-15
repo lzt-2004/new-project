@@ -103,8 +103,10 @@ input:focus { border-color: #35a88d; box-shadow: 0 0 0 3px rgba(55, 199, 160, 0.
 .order-row__right b { font-size: 13px; white-space: nowrap; }
 .status-badge { display: inline-block !important; margin: 0 !important; border-radius: 4px; padding: 3px 6px; font-size: 10px !important; font-weight: 700; }
 .status-badge--pending { color: #9b6217; background: #fff4df; }
+.status-badge--paid { color: #13795b; background: #e5f7ee; }
 .status-badge--cancelled { color: #68767e; background: #edf1f3; }
 .text-button { border: 0; padding: 0; color: #ae342c; background: transparent; font-size: 12px; }
+.text-button--pay { color: #13795b; }
 .text-button:hover { text-decoration: underline; }
 .log-list { max-height: 620px; overflow: auto; }
 .log-entry { padding: 13px 0; border-bottom: 1px solid #edf0f2; }

@@ -3,6 +3,7 @@ package com.tt.fulfillflow.order;
 import java.time.LocalDateTime;
 
 import com.tt.fulfillflow.common.InsufficientStockException;
+import com.tt.fulfillflow.common.OrderStateConflictException;
 import com.tt.fulfillflow.common.ResourceNotFoundException;
 import com.tt.fulfillflow.inventory.InventoryRepository;
 import com.tt.fulfillflow.sku.Sku;
@@ -53,8 +54,14 @@ public class OrderService {
 
     @Transactional
     public OrderResponse cancelOrder(Long orderId) {
-        SalesOrder order = salesOrderRepository.findById(orderId)
+        SalesOrder order = salesOrderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("order not found: " + orderId));
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            return OrderResponse.from(order);
+        }
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new OrderStateConflictException(orderId, order.getStatus(), "cancelled");
+        }
 
         LocalDateTime now = LocalDateTime.now();
         int cancelledRows = salesOrderRepository.cancelIfPending(
@@ -64,7 +71,7 @@ public class OrderService {
                 now
         );
         if (cancelledRows == 0) {
-            return OrderResponse.from(salesOrderRepository.findById(orderId).orElseThrow());
+            return resolveCancellationConflict(orderId);
         }
 
         int releasedRows = inventoryRepository.releaseReservedStock(order.getSkuId(), order.getQuantity(), now);
@@ -72,5 +79,44 @@ public class OrderService {
             throw new IllegalStateException("reserved stock is inconsistent for order " + orderId);
         }
         return OrderResponse.from(salesOrderRepository.findById(orderId).orElseThrow());
+    }
+
+    @Transactional
+    public OrderResponse payOrder(Long orderId) {
+        SalesOrder order = salesOrderRepository.findByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("order not found: " + orderId));
+        if (order.getStatus() == OrderStatus.PAID) {
+            return OrderResponse.from(order);
+        }
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new OrderStateConflictException(orderId, order.getStatus(), "paid");
+        }
+
+        int paidRows = salesOrderRepository.payIfPending(
+                orderId,
+                OrderStatus.PENDING,
+                OrderStatus.PAID,
+                LocalDateTime.now()
+        );
+        if (paidRows == 0) {
+            return resolvePaymentConflict(orderId);
+        }
+        return OrderResponse.from(salesOrderRepository.findById(orderId).orElseThrow());
+    }
+
+    private OrderResponse resolveCancellationConflict(Long orderId) {
+        SalesOrder latestOrder = salesOrderRepository.findById(orderId).orElseThrow();
+        if (latestOrder.getStatus() == OrderStatus.CANCELLED) {
+            return OrderResponse.from(latestOrder);
+        }
+        throw new OrderStateConflictException(orderId, latestOrder.getStatus(), "cancelled");
+    }
+
+    private OrderResponse resolvePaymentConflict(Long orderId) {
+        SalesOrder latestOrder = salesOrderRepository.findById(orderId).orElseThrow();
+        if (latestOrder.getStatus() == OrderStatus.PAID) {
+            return OrderResponse.from(latestOrder);
+        }
+        throw new OrderStateConflictException(orderId, latestOrder.getStatus(), "paid");
     }
 }

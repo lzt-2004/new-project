@@ -3,7 +3,10 @@ import { ListOrdered } from "lucide-vue-next";
 import type { Order } from "../types/api";
 
 defineProps<{ orders: Order[] }>();
-const emit = defineEmits<{ cancel: [orderId: number] }>();
+const emit = defineEmits<{
+  pay: [orderId: number];
+  cancel: [orderId: number];
+}>();
 </script>
 
 <template>
@@ -24,7 +27,10 @@ const emit = defineEmits<{ cancel: [orderId: number] }>();
         <div class="order-row__right">
           <b>¥ {{ Number(order.totalAmount).toFixed(2) }}</b>
           <span class="status-badge" :class="`status-badge--${order.status.toLowerCase()}`">{{ order.status }}</span>
-          <button v-if="order.status === 'PENDING'" class="text-button" type="button" @click="emit('cancel', order.orderId)">取消</button>
+          <template v-if="order.status === 'PENDING'">
+            <button class="text-button text-button--pay" type="button" @click="emit('pay', order.orderId)">确认支付</button>
+            <button class="text-button" type="button" @click="emit('cancel', order.orderId)">取消</button>
+          </template>
         </div>
       </article>
     </div>

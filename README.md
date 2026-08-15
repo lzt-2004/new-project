@@ -26,6 +26,7 @@ FulfillFlow/
 - 创建订单与价格快照
 - 订单创建失败时回滚库存预占
 - 幂等取消订单并释放预占库存
+- 模拟支付确认与 `PENDING -> PAID` 状态流转，支付后库存不变
 - Flyway 数据库版本迁移
 - MockMvc 接口测试与 GitHub Actions CI
 - Vue 管理台：库存操作、订单操作与请求日志

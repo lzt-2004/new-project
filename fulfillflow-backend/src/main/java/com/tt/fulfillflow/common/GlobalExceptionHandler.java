@@ -29,4 +29,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.failure(40901, exception.getMessage()));
     }
+
+    @ExceptionHandler(OrderStateConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleOrderStateConflict(OrderStateConflictException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.failure(40902, exception.getMessage()));
+    }
 }

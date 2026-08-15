@@ -15,7 +15,7 @@ export interface Inventory {
   updatedAt: string;
 }
 
-export type OrderStatus = "PENDING" | "CANCELLED";
+export type OrderStatus = "PENDING" | "PAID" | "CANCELLED";
 
 export interface Order {
   orderId: number;

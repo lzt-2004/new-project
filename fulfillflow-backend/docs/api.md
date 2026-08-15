@@ -10,7 +10,7 @@
 }
 ```
 
-Validation errors use HTTP `400` and code `40001`. Missing resources use HTTP `404` and code `40401`. Insufficient inventory uses HTTP `409` and code `40901`.
+Validation errors use HTTP `400` and code `40001`. Missing resources use HTTP `404` and code `40401`. Insufficient inventory uses HTTP `409` and code `40901`. Order state conflicts use HTTP `409` and code `40902`.
 
 ## Create SKU
 
@@ -58,8 +58,14 @@ Quantity must be positive. Replenishment changes only `availableStock`.
 
 Returns HTTP `201` with an order number, price snapshot, total amount, and initial `PENDING` status. It atomically moves the requested quantity from `availableStock` to `reservedStock`. When available stock is insufficient, it returns HTTP `409` and code `40901`.
 
+## Confirm payment
+
+`POST /api/orders/{orderId}/payments`
+
+No request body is required. This project simulates payment confirmation: a `PENDING` order changes to `PAID`. The stock was already reserved when the order was created, so payment does not change `availableStock`, `reservedStock`, or the inventory `version`. Repeating the request returns the existing `PAID` order. A cancelled order cannot be paid and returns HTTP `409` with code `40902`.
+
 ## Cancel order
 
 `POST /api/orders/{orderId}/cancellations`
 
-No request body is required. A `PENDING` order changes to `CANCELLED` and atomically releases its quantity from `reservedStock` back to `availableStock`. Repeating the request returns the existing `CANCELLED` order and does not release inventory again.
+No request body is required. A `PENDING` order changes to `CANCELLED` and atomically releases its quantity from `reservedStock` back to `availableStock`. Repeating the request returns the existing `CANCELLED` order and does not release inventory again. A paid order cannot be cancelled and returns HTTP `409` with code `40902`.

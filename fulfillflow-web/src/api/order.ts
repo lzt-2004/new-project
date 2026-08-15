@@ -8,3 +8,7 @@ export function createOrder(skuId: number, quantity: number) {
 export function cancelOrder(orderId: number) {
   return unwrap(client.post<ApiResponse<Order>>(`/orders/${orderId}/cancellations`));
 }
+
+export function payOrder(orderId: number) {
+  return unwrap(client.post<ApiResponse<Order>>(`/orders/${orderId}/payments`));
+}

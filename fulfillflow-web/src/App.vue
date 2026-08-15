@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { Activity, Boxes, CircleCheck, CircleX, Gauge, ListOrdered, PackageCheck, PanelLeftClose, PanelLeftOpen } from "lucide-vue-next";
-import { cancelOrder } from "./api/order";
+import { cancelOrder, payOrder } from "./api/order";
 import { getInventory } from "./api/inventory";
 import { readableError } from "./api/http";
 import InventoryPanel from "./components/InventoryPanel.vue";
@@ -74,6 +74,18 @@ async function cancelFromHistory(orderId: number) {
   }
 }
 
+async function payFromHistory(orderId: number) {
+  pageNotice.value = undefined;
+  try {
+    const order = await payOrder(orderId);
+    upsertOrder(order);
+    await refreshInventory(order.skuId);
+    activeView.value = "orders";
+  } catch (error) {
+    pageNotice.value = readableError(error);
+  }
+}
+
 void checkConnection();
 </script>
 
@@ -138,14 +150,14 @@ void checkConnection();
           <CircleCheck :size="19" aria-hidden="true" />
           <div>
             <strong>库存模型</strong>
-            <span>创建订单时，可售库存转为预占库存；取消订单后再释放回可售库存。</span>
+            <span>创建订单时，可售库存转为预占库存；支付只确认订单，取消才会释放库存。</span>
           </div>
         </section>
       </section>
 
       <section v-show="activeView === 'orders'" class="workspace workspace--orders">
         <OrderPanel :inventory="inventory" @order-created="upsertOrder" @inventory-refresh="refreshInventory" />
-        <OrderHistory :orders="orders" @cancel="cancelFromHistory" />
+        <OrderHistory :orders="orders" @pay="payFromHistory" @cancel="cancelFromHistory" />
       </section>
 
       <section v-show="activeView === 'logs'" class="workspace workspace--logs">

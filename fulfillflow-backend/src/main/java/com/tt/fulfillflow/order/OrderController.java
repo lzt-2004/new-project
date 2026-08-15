@@ -30,4 +30,9 @@ public class OrderController {
     public ApiResponse<OrderResponse> cancelOrder(@PathVariable Long orderId) {
         return ApiResponse.success(orderService.cancelOrder(orderId));
     }
+
+    @PostMapping("/{orderId}/payments")
+    public ApiResponse<OrderResponse> payOrder(@PathVariable Long orderId) {
+        return ApiResponse.success(orderService.payOrder(orderId));
+    }
 }
